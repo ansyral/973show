@@ -77,6 +77,9 @@
 				
 				<?php
 				
+				echo "<span>人名：".$row[6]." </span><br>";
+				echo "<span>地名：".$row[7]." </span><br>";
+				echo "<span>机构名：".$row[8]." </span><br>";
             	echo "<p>".$row[1]." </p><br>";
           			
   				?>
