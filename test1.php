@@ -3,6 +3,7 @@
 	<head>
    <script src="http://yui.yahooapis.com/3.3.0/build/yui/yui-min.js"></script>
    <script src="lib/d3/d3.js"></script>
+   <script src="overlay1.js" type="text/javascript"></script>
    <script src="d3.layout.cloud.js"></script>
    <script>
    YUI({
@@ -44,7 +45,7 @@
         										  "{"+
         										  "document.write(\"<img style='padding: 10px;	background: #c0dfff;width:310px;height:310px;	border: 1px solid #99b3cc;	border-radius: 10px;position: absolute;' src='\"+repimgs[i]+\"' alt='Cave' />\");"+
         										  "}"+
-        										  "<"+"/script>"+	   	
+        										  "<//script>"+	   	
 												  "</div>"+
 											      "</td>"+
 												  "<td>"+
@@ -55,7 +56,7 @@
         										  "var data = eval (\"(\" + obj + \")\");"+
         										  "var summary=data.summary;"+
         										  "document.write(\"<p>\"+summary+\"</p>\");"+        				
-        										  "<"+"/script>"+	
+        										  "<//script>"+	
 												  "</div>"+
 												  "<div id=\"tagcloud\" >"+
 												  "<script>"+							
@@ -95,7 +96,7 @@
         						"})"+
        				 			".text(function(d) { return d.text; });"+
   								"}"+
-						"<"+"/script>"+	
+						"<//script>"+	
 						"</div>"+ 
 					"</td>"+
 				"</tr>"+
@@ -103,7 +104,7 @@
 		"</div>"+
 		"</div>";
 		//alert(innerhtml);
-		inn.set('innerHTML',innerhtml);
+		showDialog(600,600,innerhtml);
 		//document.getElementById("inner").innerHTML=innerhtml;
 		});
 		
