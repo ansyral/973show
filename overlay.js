@@ -66,3 +66,28 @@
 		}
 	}
 };
+monthchara=new Array('','January','February','March','April','May','June','July','August','September','October','November','December');
+function updateinner(){
+	var repreimg=datas.repimg.split(",");
+	for(var i=0;i<3;i++)
+	{
+		$("#img"+i).attr("src",repreimg[i]);
+	}
+	$("#summcontent").text(datas.summary);
+	$('#monthtip h1').text(monthchara[month]);
+										
+	var fill = d3.scale.category20();
+  	var hfterms=datas.repword;
+  	var hfterm_weight=datas.repword_weight;
+  	var hfterm_weights=hfterm_weight.split(",");
+
+  	d3.layout.cloud().size([300, 300])
+    .words((hfterms.split(",")).map(function(d,i) {
+        return {text: d, size: parseInt(hfterm_weights[i]*3000)};
+    }))
+    .rotate(function() { return ~~(Math.random() * 2) * 90; })
+    .font("Impact")
+    .fontSize(function(d) { return d.size; })
+    .on("end", redraw)
+    .start();
+}

@@ -65,6 +65,24 @@
 		#summary h2,#summary p{
 			color:#ffffff
 		}
+		#leftarrow{
+			position:fixed;
+			left:20px;
+			margin:auto;
+			top:300px;
+		}
+		#rightarrow{
+			position:fixed;
+			right:20px;
+			margin:auto;
+			top:300px;
+		}
+		#monthtip{
+			position:fixed;
+			left:50px;
+			top:0px;
+			color:FF0000
+		}
 		</style>
 		<script>
 			<?php
@@ -155,42 +173,23 @@
 					if($radius[$i-1]!=0)
 				?>
 				Y.one('#circle<?php echo $i;?>').on('click', function (ev) {
+					month=<?php echo $i?>;
 					Y.io('io.php', {
-						data: 'month_id=<?php echo $i?>',
+						data: 'month_id='+month,
 						on: {
 							complete: function (id, response) {
 								if (response.status >= 200 && response.status < 300) {
-									var datas=Y.JSON.parse(response.responseText);
+									datas=Y.JSON.parse(response.responseText);
 									if(datas.code==0)
 									{
 										alert("something about data has been wrong!");
 									}
 									else
 									{
-										$_overlay.create();
-										var repreimg=datas.repimg.split(",");
-										for(var i=0;i<3;i++)
-										{
-											$("#img"+i).attr("src",repreimg[i]);
-										}
-										$("#summcontent").text(datas.summary);
+										$_overlay.create();																				
+										updateinner();
 										
-										var fill = d3.scale.category20();
-  										var hfterms=datas.repword;
-  										var hfterm_weight=datas.repword_weight;
-  										var hfterm_weights=hfterm_weight.split(",");
-
-  										d3.layout.cloud().size([300, 300])
-      									.words((hfterms.split(",")).map(function(d,i) {
-        									return {text: d, size: parseInt(hfterm_weights[i]*3000)};
-      									}))
-      									.rotate(function() { return ~~(Math.random() * 2) * 90; })
-      									.font("Impact")
-      									.fontSize(function(d) { return d.size; })
-      									.on("end", redraw)
-      									.start();
 										
-									
 										$("#innershowhtml").fadeIn(1000);
 										$("#closeicon").fadeIn(1000);
 										$_overlay.self.click(function(){
@@ -233,13 +232,70 @@
  
 			});
 	
-			YUI().use('node', function (Y) {
+			YUI().use('node','io-base','node-base','json-parse',  function (Y) {
 				var hideButton = Y.one('#closeicon'),
 				demo = Y.one('#innershowhtml');
 				hideButton.on('click', function () {
 				demo.hide();
 				hideButton.hide();
 				$_overlay.destroy();
+				});
+				Y.one('#leftarrow').on('click',function(ev){
+					if(month>1)
+					{
+						month=month-1;
+						Y.io('io.php', {
+							data: 'month_id='+month,
+							on: {
+								complete: function (id, response) {
+									if (response.status >= 200 && response.status < 300) {
+										datas=Y.JSON.parse(response.responseText);
+										if(datas.code==0)
+										{
+											alert("something about data has been wrong!");
+										}
+										else if(datas.code==1)
+										{
+											updateinner();
+										}
+									
+									}
+									else {									
+										alert("something has been wrong.");
+									}
+								}
+							}
+						});
+					}
+				});
+				Y.one('#rightarrow').on('click',function(ev){
+					if(month<12)
+					{
+						month=month+1;
+						Y.io('io.php', {
+							data: 'month_id='+month,
+							on: {
+								complete: function (id, response) {
+									if (response.status >= 200 && response.status < 300) {
+										datas=Y.JSON.parse(response.responseText);
+										if(datas.code==0)
+										{
+											alert("something about data has been wrong!");
+										}
+									
+										else if(datas.code==1)
+										{
+											updateinner();
+										}
+									
+									}
+									else {									
+										alert("something has been wrong.");
+									}
+								}
+							}
+						});
+					}
 				});
 			});
 		</script>
@@ -270,6 +326,12 @@
 
 		<div id="closeicon" ></div>
 		<div id="innershowhtml" >
+			<div id="monthtip">
+				<h1>March</h1>
+			</div>
+			<div id="leftarrow">
+				<img src="http://10.214.28.222:8080//973show/img/left.png"/>
+			</div>
 			<table>
 				<tr>
 					<td id="repimg">
@@ -278,8 +340,8 @@
     						
         							<script>
         							var obj="{'repimg':'http://10.214.28.222:8080/973show/img/JAPAN-1-articleLarge.jpg,http://10.214.28.222:8080/973show/img/contaminated_water.jpg,http://10.214.28.222:8080/973show/img/t1larg.japan.power.plant.afp.gi.jpg'}";
-        							var datas = eval ("(" + obj + ")");
-        							var repimgs=datas.repimg.split(",");
+        							var data = eval ("(" + obj + ")");
+        							var repimgs=data.repimg.split(",");
         							//alert(repimgs);
         							for(var i=0;i<repimgs.length;i++)
         							{
@@ -299,8 +361,8 @@
 							<h2>Summarization:</h2>
 							<script>
         						var obj="{'summary':'That could compromise attempts to bring the crisis under control.2, saw the reading on his dosimeter jump beyond 1,000 millisieverts per hour, the highest reading on the device.The worker left the scene immediately, said Takeo Iwamoto, a spokesman for Tokyo Electric Power.Michiaki Furukawa, a nuclear chemist and a board member of the Citizens&rsquo; Nuclear Information Center, a Tokyo-based watchdog group, said exposure to 1,000 millisieverts of radiation per hour would induce nausea and vomiting, while exposure to triple that amount could be lethal'}";
-        						var datas = eval ("(" + obj + ")");
-        						var summary=datas.summary;
+        						var data = eval ("(" + obj + ")");
+        						var summary=data.summary;
         							//alert(repimgs);
         						
         						document.write("<p id='summcontent'>"+summary+"</p>");        				
@@ -311,11 +373,11 @@
 							<script>
   								
   								var obj="{'repword':'japan ,nuclear ,plant ,tokyo ,japanese ,water ,reactor ,reactors ,radiation ,power ,fuel ,earthquake ,radioactive ,fukushima ,tsunami ,officials, levels ,daiichi ,workers ,plants ,electric ,company ,safety ,cooling ,crisis,rods,spent,agency ,reported,friday,iodine,energy,damaged,found,days,miles,damage,health,','repword_weight':'0.0323, 0.0278, 0.0215, 0.0194, 0.0173, 0.0165, 0.0154, 0.0154, 0.0143, 0.0138, 0.0118, 0.0115, 0.0104, 0.0104 ,0.0077, 0.0077,0.0075 ,0.0073 ,0.0072 ,0.0071 ,0.0066 ,0.0059 ,0.0058 ,0.0057,0.0056,0.0056,0.0051 ,0.0049,0.0048,0.0044,0.0043,0.0043,0.0039,0.0038,0.0036,0.0036,0.0034,0.0034'}";
-        						var datas = eval ("(" + obj + ")");
+        						var data = eval ("(" + obj + ")");
         						
         						var fill = d3.scale.category20();
-  								var hfterms=datas.repword;
-  								var hfterm_weight=datas.repword_weight;
+  								var hfterms=data.repword;
+  								var hfterm_weight=data.repword_weight;
   								var hfterm_weights=hfterm_weight.split(",");
 
   								d3.layout.cloud().size([300, 300])
@@ -367,10 +429,12 @@
   								
 							</script>
 						</div> 
-					</td>
+					</td>					
 				</tr>
 			</table>
-
+			<div id="rightarrow">
+				<img src="http://10.214.28.222:8080//973show/img/right.png"/>
+			</div>
 		
    
 	</div>

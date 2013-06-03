@@ -17,6 +17,8 @@
 				$query=mysql_query($sql,$conn); 
 				if(!$query)
         		{	$response['code']=0;echo $sql;}
+				else if(mysql_num_rows($query)==0)
+					$response['code']=2;
       			else 
       			{
         			$row=mysql_fetch_row($query);           //显示test表中的数据
