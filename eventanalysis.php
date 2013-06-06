@@ -189,11 +189,10 @@
 								else if(datas.code==1)// code==2 to note there is no data,then no need to draw.
 								{
 									var events=datas.events;
-									for(var j=0;j<2;j++)
-									{
+									
 									for(var i=0;i<12;i++)
 									{
-										periody[i]=posy-j*100;
+										periody[i]=posy;
 										periodr[i]=basicr;
 									}							
 									
@@ -214,13 +213,13 @@
             									weight: 2,
             									color: "#444444"
         									},
-        									id:"circle"+parseInt(i+j*1000),
+        									id:"circle"+i,
         									visible:true,
         									x: periodx[index],
         									y: periody[index]
     									});
     									//if(i==0)alert(Y.one('#circle0').getXY()+" "+periodx[index]+' '+periody[index]);
-    									Y.one('#circle'+parseInt(i+j*1000)).setAttribute('data-tooltip',events[i].content);
+    									Y.one('#circle'+i).setAttribute('data-tooltip',events[i].content);
     									periodr[index]+=2;
     									periody[index]-=80/(periodr[index]-basicr);
     									if(periody[index]<=0)
@@ -228,7 +227,7 @@
 									}
 									for(var i=0;i<12;i++)
 									{
-										if(periody[i]!=posy-j*100)
+										if(periody[i]!=posy)
 										{											
 											periody[i]+=80/(periodr[i]-basicr);
 											periodr[i]-=2;
@@ -242,9 +241,9 @@
 											opacity: 1,
 											dashstyle: "none"
 										},
-										id: "connector"+j
+										id: "connector"
             						});
-            						connector.moveTo(0,height-10-j*100);    	
+            						connector.moveTo(0,height-10);    	
     								for(var i=0;i<12;i++)
 									{
 										var contrlpx,contrlpy;
@@ -256,14 +255,14 @@
 										else
 										{
 											contrlpx=(periodx[i]+0)/2;
-											contrlpy=(height)-10-j*100;
+											contrlpy=(height)-10;
 										}
 										connector.curveTo(contrlpx,contrlpy,contrlpx,periody[i]-20,periodx[i],periody[i]-20);
 										//alert(periodx[i]+" "+(periody[i]-20-periodr[i]));
 									}
     								
     								connector.end();
-    							}
+    							
     								var tooltip = new Y.Overlay({ width: 200, visible: false });
 									function enter(ev) {
 										var node = ev.currentTarget;
