@@ -268,9 +268,10 @@
 									function enter(ev) {
 										var node = ev.currentTarget;
 										//alert(node);
-										tooltip.align(node, [Y.WidgetPositionAlign.TL, Y.WidgetPositionAlign.TL]);
+										//tooltip.align(node, [Y.WidgetPositionAlign.TL, Y.WidgetPositionAlign.TL]);
 										tooltip.set('bodyContent', '<div style="text-align:center;padding:5px 5px 5px 5px">'+node.getAttribute('data-tooltip')+'</div>');	
-										//Y.one('.yui3-overlay').setXY([node.getX()-20,node.getY()-50]);	
+										Y.one('.yui3-overlay').setXY([node.getX()-50,node.getY()-100]);	
+										//alert(node.getAttribute('r'));
 										//alert(Y.one('.yui3-overlay').getStyle('z-index'));								
 										tooltip.show();
 										
