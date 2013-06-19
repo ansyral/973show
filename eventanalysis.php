@@ -60,6 +60,7 @@
 		
 		YUI().use('node','io-base','json-parse','graphics','overlay', 'event-mouseenter',function(Y){
 			var mygraphic = new Y.Graphic({render: "#mygraphiccontainer"});
+			var tooltip = new Y.Overlay({ width: 200, visible: false });
 			var anadiv=Y.one('#mygraphiccontainer');
 			var width=anadiv.get('offsetWidth');
 			var height=anadiv.get('offsetHeight');
@@ -263,7 +264,7 @@
     								
     								connector.end();
     							
-    								var tooltip = new Y.Overlay({ width: 200, visible: false });
+    								
 									function enter(ev) {
 										var node = ev.currentTarget;
 										//alert(node);
