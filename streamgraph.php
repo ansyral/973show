@@ -8,14 +8,13 @@ body {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   margin: auto;
   position: relative;
-  width: 100%;
-  height:100%
+ 
 }
 
 #stream{
 	float:left;
 	width:80%;
-	margin:5px,5px,5px,5px;
+	
 	
 	
 }
@@ -33,8 +32,17 @@ body {
 
 #descrip{
 	margin-left: 40px;
-}　   
+}　 
+.yui3-overlay {
+	background: #000000;
+	padding: 3px;
+	border: 1px #a92 solid;
+	border-radius: 5px;
 
+}
+.yui3-overlay-content{
+			color:#ffffff;
+		}
 </style>
 
 <script src="http://d3js.org/d3.v3.min.js"></script>
@@ -82,7 +90,7 @@ body {
     								  .values(function(d) { return d.values; });
 						//var	basic=d3.range(n).map(function(){return d3.range(m).map(function(){return parseInt(Math.random()*10);});});
 						var basic=datas.events.sort(sortEvent);
-						var layers0 = stack(d3.range(n).map(function(d,i) { return {"heat":basic[i].heat,"name":basic[i].title,"values":bumpLayer(m,basic[i])}; }));
+						var layers0 = stack(d3.range(n).map(function(d,i) { return {"eventid":basic[i].event_id,"heat":basic[i].heat,"name":basic[i].title,"values":bumpLayer(m,basic[i])}; }));
 						//alert(basic[0]);
    
 
@@ -119,9 +127,11 @@ body {
  						  		     .enter().append("path")
  									 .attr("d", function(d) { return area(d.values); })
  									 .attr("packing",function(d){return d.name})
+ 									 .attr('data-tooltip',function(d){return d.name})
+ 									 .attr('event-id',function(d){return d.eventid})
  						   			 .style("fill", function(d) { return color(Math.sin(d.heat)); });
- 						node.append("title")     					   
-      					    .text(function(d) { return d.name; });
+ 						//node.append("title")     					   
+      					//    .text(function(d) { return d.name; });
       					node.append("text")
       					    //.attr("dy", ".3em")
       					    .attr("width","50px")
@@ -184,12 +194,47 @@ body {
 <div id="verticalline">
 </div>
 <div id="legend">
-	<div id="descrip">
-		Each shape shows how is one event's heat.
-	</div>
+	
 	<div>
-		<img src="./img/legend1.jpg"/>
+		<img src="./img/legend2.jpg"/>
 	</div>
 	
 </div>
 </body>
+<script>
+	YUI().use('node','io-base','json-parse','overlay', 'event-mouseenter',function(Y){
+		var tooltip = new Y.Overlay({ width: 200,visible: false });
+		function enter(ev) {
+			var node = ev.currentTarget;
+			//alert(node);
+			//tooltip.align(node, [Y.WidgetPositionAlign.TL, Y.WidgetPositionAlign.BC]);
+			
+			Y.io('geteventurl.php',{
+				data:{'eventid':node.getAttribute('event-id')},
+				on:{
+					complete:function(id,response){
+					if(response.status>=200&&response.status<300){
+						url=Y.JSON.parse(response.responseText);
+					
+				
+						tooltip.set('bodyContent', '<div style="text-align:center;padding:5px 5px 5px 5px;background-color:#000000">'+node.getAttribute('data-tooltip')+'<img width="160px" height="160px" src="'+url.url+'"/></div>');	
+			//Y.one('.yui3-overlay').setXY([node.getX(),node.getY()]);	
+						Y.one('.yui3-overlay').setXY([ev.pageX,ev.pageY]);	
+			//alert(node.getAttribute('r'));
+			//alert(Y.one('.yui3-overlay').getStyle('z-index'));								
+						tooltip.show();
+					}
+					}
+				}
+			});
+										
+		}
+		function leave(ev) {
+			tooltip.hide();
+		}
+		Y.delegate('mouseenter', enter, 'body', '*[data-tooltip]');
+		Y.delegate('mouseleave', leave, 'body', '*[data-tooltip]');
+		tooltip.render();
+	});
+</script>
+</html>
