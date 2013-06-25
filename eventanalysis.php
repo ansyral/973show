@@ -60,11 +60,12 @@
 		
 		YUI().use('node','io-base','json-parse','graphics','overlay', 'event-mouseenter',function(Y){
 			var mygraphic = new Y.Graphic({render: "#mygraphiccontainer"});
+			var tooltip = new Y.Overlay({ width: 200, visible: false });
 			var anadiv=Y.one('#mygraphiccontainer');
 			var width=anadiv.get('offsetWidth');
 			var height=anadiv.get('offsetHeight');
 			var basicr=10;
-			var posy=height-2*basicr-10;
+			var posy=height-2*basicr;
 			//alert(anadiv.getXY());
 			//alert(height);
 			var basicw=Math.round(2*width/25);
@@ -193,7 +194,7 @@
 									{
 									for(var i=0;i<12;i++)
 									{
-										periody[i]=posy-j*100;
+										periody[i]=posy-10-j*100;
 										periodr[i]=basicr;
 									}							
 									
@@ -228,11 +229,13 @@
 									}
 									for(var i=0;i<12;i++)
 									{
-										if(periody[i]!=posy-j*100)
+										if(periody[i]!=posy-10-j*100)
 										{											
 											periody[i]+=80/(periodr[i]-basicr);
 											periodr[i]-=2;
 										}
+										else
+											periody[i]+=2*basicr;
 									}
 									var connector = mygraphic.addShape({
                 						type: "path",
@@ -251,20 +254,20 @@
 										if(i!=0)
 										{
 											contrlpx=(periodx[i]+periodx[i-1])/2;
-											contrlpy=(periody[i-1])-20;
+											contrlpy=(periody[i-1]);
 										}
 										else
 										{
 											contrlpx=(periodx[i]+0)/2;
-											contrlpy=(height)-10-j*100;
+											contrlpy=height-10-j*100;
 										}
-										connector.curveTo(contrlpx,contrlpy,contrlpx,periody[i]-20,periodx[i],periody[i]-20);
+										connector.curveTo(contrlpx,contrlpy,contrlpx,periody[i],periodx[i],periody[i]);
 										//alert(periodx[i]+" "+(periody[i]-20-periodr[i]));
 									}
     								
     								connector.end();
     							}
-    								var tooltip = new Y.Overlay({ width: 200, visible: false });
+    								
 									function enter(ev) {
 										var node = ev.currentTarget;
 										//alert(node);
