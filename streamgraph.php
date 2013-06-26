@@ -15,9 +15,8 @@ body {
 	float:left;
 	width:80%;
 	
-	
-	
 }
+
 #verticalline{
 	float:left;
 	width: 0.1%; 
@@ -29,10 +28,21 @@ body {
 	width:19.9%;
 	margin:5px,5px,5px,5px;
 }
-
+#repreimg{
+	max-width:200px;
+	margin:auto;
+	display: block;
+	padding: 10px;
+	background: #c0dfff;
+	border: 1px solid #99b3cc;	
+	border-radius: 10px;
+}
 #descrip{
 	margin-left: 40px;
 }　 
+#curve{
+	position:fixed;
+}
 .yui3-overlay {
 	background: #000000;
 	padding: 3px;
@@ -68,9 +78,9 @@ body {
 		</tr>
 		</table>
 	</div>
-	<div >
+	<div id="graph">
 		<script>
-		YUI().use('node','io-base','json-parse',function(Y){
+		YUI().use('node','io-base','json-parse','graphics', 'event-mouseenter',function(Y){
 		Y.io('geteventheat.php',{
 		data:{'topicid':30},
 		on:{
@@ -93,8 +103,8 @@ body {
 						var layers0 = stack(d3.range(n).map(function(d,i) { return {"eventid":basic[i].event_id,"heat":basic[i].heat,"name":basic[i].title,"values":bumpLayer(m,basic[i])}; }));
 						//alert(basic[0]);
    
-
-						var width = 960,
+						var bodyw=document.body.clientWidth;
+						var width = 0.8*bodyw,
     						height = 500;
 
 						var x = d3.scale.linear()
@@ -118,7 +128,7 @@ body {
    									 .y0(function(d) { return y(d.y0); })
  									 .y1(function(d) { return y(d.y0 + d.y); });
 
-						var svg = d3.select("div#stream div").append("svg")
+						var svg = d3.select("div#graph").append("svg")
   								    .attr("width", width)
   								    .attr("height", height);
 
@@ -130,8 +140,8 @@ body {
  									 .attr('data-tooltip',function(d){return d.name})
  									 .attr('event-id',function(d){return d.eventid})
  						   			 .style("fill", function(d) { return color(Math.sin(d.heat)); });
- 						//node.append("title")     					   
-      					//    .text(function(d) { return d.name; });
+ 						node.append("title")     					   
+      					    .text(function(d) { return d.name; });
       					node.append("text")
       					    //.attr("dy", ".3em")
       					    .attr("width","50px")
@@ -139,17 +149,57 @@ body {
      					    .style("text-anchor", "middle")
     					    .text(function(d) { return d.name; });
     					
-
+    					
+    					
+						mygraphic = new Y.Graphic({render: "#curve"});
+						Y.all('path').on('mouseover', function (ev) {			
+							var connector = mygraphic.addShape({
+                			type: "path",
+							stroke: {
+								weight: 2,
+								color: "#B0B0B0",
+								opacity: 1,
+								dashstyle: "none"
+							},
+							
+            				});
+							var node=ev.currentTarget;
+							connector.moveTo(ev.pageX,ev.pageY);
+							Y.io('geteventurl.php',{
+								data:{'eventid':node.getAttribute('event-id')},
+								on:{
+									complete:function(id,response){
+									if(response.status>=200&&response.status<300){
+										url=Y.JSON.parse(response.responseText);
+										if(url.url!=null)
+											Y.one('#repreimg').set('src',url.url);
+										else
+											Y.one('#repreimg').set('src','./img/default.png');
+				
+						
+									}
+									}
+								}
+							});
+							var pic=Y.one('#repreimg');
+							connector.curveTo((ev.pageX+pic.getX())/2,ev.pageY,(ev.pageX+pic.getX())/2,pic.getY(),pic.getX(),pic.getY());
+							connector.end();
+						});
+						Y.all('path').on('mouseout', function (ev) {
+							if(mygraphic!=null)
+								mygraphic.removeAllShapes();
+						});
+		
 
 
 						// Inspired by Lee Byron's test data generator.
 						
-							}
-						}
-					}
-				}
-			});
-		});
+							}//else
+						}//if
+					}//complete
+				}//on
+			});//io
+		});//use
 
 		function sortEvent(a,b)
 		{
@@ -194,15 +244,23 @@ body {
 <div id="verticalline">
 </div>
 <div id="legend">
-	
 	<div>
-		<img src="./img/legend2.jpg"/>
+		<img  src="./img/legend_1.jpg"/>
+	</div>
+	<div>
+		<img  id="repreimg" src="./img/default.png"/>
 	</div>
 	
+	
+	
 </div>
-</body>
-<script>
-	YUI().use('node','io-base','json-parse','overlay', 'event-mouseenter',function(Y){
+<div id="curve">
+</div>
+
+<script >
+	/*YUI().use('node','io-base','json-parse','graphics', 'event-mouseenter',function(Y){
+		
+		
 		var tooltip = new Y.Overlay({ width: 200,visible: false });
 		function enter(ev) {
 			var node = ev.currentTarget;
@@ -235,6 +293,7 @@ body {
 		Y.delegate('mouseenter', enter, 'body', '*[data-tooltip]');
 		Y.delegate('mouseleave', leave, 'body', '*[data-tooltip]');
 		tooltip.render();
-	});
+	});*/
 </script>
+</body>
 </html>
